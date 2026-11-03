@@ -17,6 +17,7 @@ tasks:
     covers: [AC-001.8, AC-001.9, AC-001.10, AC-001.11]
     parallel_safe: true
     depends_on: []
+    done: true
   - id: t3
     title: Expose POST/GET /tasks and add the create_app factory
     files: [src/demo_taskboard_api/tasks_api.py, src/demo_taskboard_api/main.py]
