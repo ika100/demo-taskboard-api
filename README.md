@@ -31,3 +31,5 @@ See `CLAUDE.md` for the full agent workflow and `devbox.json` for the canonical 
 | Staging / prod | Open a PR in the platform gitops repo or `/instance:promote demo-taskboard-api --to <env>` |
 
 Image: `ghcr.io/ika100/demo-taskboard-api` — built and tagged automatically by CI.
+
+Try it: `POST /tasks` creates a task, `GET /tasks` lists them.
