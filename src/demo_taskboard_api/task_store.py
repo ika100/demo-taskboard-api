@@ -1,4 +1,5 @@
 """In-memory, append-only task store."""
+# Tasks live in this process only (spec 001): a restart empties the list.
 
 from __future__ import annotations
 
