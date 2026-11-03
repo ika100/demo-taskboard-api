@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pytest
@@ -34,7 +34,7 @@ def test_create_task_returns_201_body() -> None:  # AC-001.1
     assert body["due_date"] is None
     created = datetime.fromisoformat(body["created_at"])
     assert created.utcoffset() == timedelta(0)
-    assert created.tzinfo is not None and created.astimezone(timezone.utc)
+    assert created.tzinfo is not None and created.astimezone(UTC)
 
 
 def test_create_task_with_due_date(fresh: TestClient) -> None:  # AC-001.2
@@ -74,9 +74,7 @@ def test_title_is_trimmed(fresh: TestClient) -> None:  # AC-001.5
     assert fresh.get("/tasks").json()[0]["title"] == "Buy milk"
 
 
-@pytest.mark.parametrize(
-    "due", ["tomorrow", "2026-13-01", "2026-02-30", "2026-12-01T10:00:00Z"]
-)
+@pytest.mark.parametrize("due", ["tomorrow", "2026-13-01", "2026-02-30", "2026-12-01T10:00:00Z"])
 def test_invalid_due_date_rejected(fresh: TestClient, due: str) -> None:  # AC-001.6
     r = fresh.post("/tasks", json={"title": "x", "due_date": due})
     assert r.status_code == 422
