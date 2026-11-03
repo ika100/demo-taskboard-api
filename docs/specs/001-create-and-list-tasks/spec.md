@@ -1,7 +1,7 @@
 ---
 spec_id: 001-create-and-list-tasks
 title: Create and list tasks
-status: building
+status: done
 priority: P1
 shape: service-python
 ---
@@ -60,3 +60,4 @@ As an API client, I want to list all tasks, so that I can see everything recorde
 - 2026-11-03 amended: all 8 open questions answered and struck through. The answers match the suggested defaults already written into AC-001.1–AC-001.11, so no criterion changed. Added the non-goal "no cap on the number of tasks kept in memory".
 - 2026-11-03 approved
 - 2026-11-03 building
+- 2026-11-03 done
