@@ -31,6 +31,7 @@ tasks:
     covers: [AC-002.1, AC-002.2, AC-002.3, AC-002.4, AC-002.5, AC-002.7, AC-002.8, AC-002.9]
     parallel_safe: false
     depends_on: [t3]
+    done: true
   - id: t5
     title: Wire the database into create_app, /ready and the 503/500 handlers
     files: [src/demo_taskboard_api/main.py, src/demo_taskboard_api/tasks_api.py, tests/test_health.py, docs/env-vars.md]
