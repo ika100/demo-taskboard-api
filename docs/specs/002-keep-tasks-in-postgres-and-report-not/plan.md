@@ -10,6 +10,7 @@ tasks:
     covers: [AC-002.1, AC-002.5]
     parallel_safe: true
     depends_on: []
+    done: true
   - id: t2
     title: Withdraw AC-001.11 and the in-memory non-goals of spec 001
     files: [docs/specs/001-create-and-list-tasks/spec.md]

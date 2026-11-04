@@ -94,7 +94,7 @@ Any unexpected exception: `500 {"detail": "Internal Server Error"}` (JSON).
 
 | Variable | Required | Notes |
 |---|---|---|
-| `DATABASE_URL` | yes in a deployment | `postgresql://user:pass@host:port/db` (also `postgres://`, `postgresql+psycopg://`); injected by the gitops repo from the CloudNativePG Secret. Never logged. `PG*` are present but not read. |
+| `DATABASE_URL` | yes in a deployment | `postgresql://<user>:<password>@<host>:<port>/<db>` (also `postgres://`, `postgresql+psycopg://`); injected by the gitops repo from the CloudNativePG Secret. Never logged. `PG*` are present but not read. |
 
 ### Test harness (for the acceptance tests)
 
