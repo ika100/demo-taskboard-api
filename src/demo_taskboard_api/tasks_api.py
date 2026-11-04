@@ -6,15 +6,15 @@ import structlog
 from fastapi import APIRouter, Request
 
 from .task_schemas import TaskCreate, TaskResponse
-from .task_store import TaskStore
+from .task_store import PostgresTaskStore
 
 router = APIRouter(tags=["tasks"])
 logger = structlog.get_logger(__name__)
 
 
-def get_task_store(request: Request) -> TaskStore:
+def get_task_store(request: Request) -> PostgresTaskStore:
     """Return the task store owned by the running app instance."""
-    store: TaskStore = request.app.state.task_store
+    store: PostgresTaskStore = request.app.state.task_store
     return store
 
 

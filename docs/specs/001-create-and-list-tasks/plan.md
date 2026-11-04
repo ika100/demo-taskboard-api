@@ -1,7 +1,7 @@
 ---
 spec_id: 001-create-and-list-tasks
 shape: service-python
-spec_hash: 12687e2b5a75
+spec_hash: 39b88c19cdb6
 summary: In-memory POST /tasks and GET /tasks with validated title and optional due date
 tasks:
   - id: t1
@@ -14,14 +14,14 @@ tasks:
   - id: t2
     title: Add in-memory TaskStore
     files: [src/demo_taskboard_api/task_store.py, tests/test_task_store.py]
-    covers: [AC-001.8, AC-001.9, AC-001.10, AC-001.11]
+    covers: [AC-001.8, AC-001.9, AC-001.10]
     parallel_safe: true
     depends_on: []
     done: true
   - id: t3
     title: Expose POST/GET /tasks and add the create_app factory
     files: [src/demo_taskboard_api/tasks_api.py, src/demo_taskboard_api/main.py]
-    covers: [AC-001.1, AC-001.2, AC-001.3, AC-001.4, AC-001.5, AC-001.6, AC-001.7, AC-001.8, AC-001.9, AC-001.10, AC-001.11]
+    covers: [AC-001.1, AC-001.2, AC-001.3, AC-001.4, AC-001.5, AC-001.6, AC-001.7, AC-001.8, AC-001.9, AC-001.10]
     parallel_safe: false
     depends_on: [t1, t2]
     done: true
@@ -49,7 +49,7 @@ Design and contract: [design.md](design.md). Levels: t1, t2 (parallel) → t3.
 ## t2 — Add in-memory TaskStore
 
 **Files:** src/demo_taskboard_api/task_store.py, tests/test_task_store.py
-**Covers:** AC-001.8, AC-001.9, AC-001.10, AC-001.11
+**Covers:** AC-001.8, AC-001.9, AC-001.10
 **Goal:** a thread-safe, append-only, per-instance store of `Task` records in creation order.
 
 **Implementation notes:**
@@ -65,7 +65,7 @@ Design and contract: [design.md](design.md). Levels: t1, t2 (parallel) → t3.
 ## t3 — Expose POST/GET /tasks and add the create_app factory
 
 **Files:** src/demo_taskboard_api/tasks_api.py, src/demo_taskboard_api/main.py
-**Covers:** AC-001.1 to AC-001.11
+**Covers:** AC-001.1 to AC-001.10
 **Goal:** wire schemas and store into HTTP endpoints, and make each app instance own a fresh store so a restart (or a new `create_app()`) starts empty.
 
 **Implementation notes:**

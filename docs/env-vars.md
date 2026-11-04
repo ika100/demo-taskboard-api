@@ -18,3 +18,9 @@ Configuration is read exclusively from environment variables. Defaults below are
 | `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES` | _(project name)_ | Resource attributes; set by the observability setting of the environment. |
 | `OTLP_ENDPOINT` | _(unset)_ | Legacy gRPC endpoint (kept for compatibility); prefer the standard variables. |
 | `METRICS_PORT` | `8080` | Port serving `/metrics` (same as the main HTTP port unless overridden). |
+
+## Database
+
+| Variable | Default | Description |
+|---|---|---|
+| `DATABASE_URL` | _(unset — task routes and `/ready` answer 503)_ | Required in a deployment. `postgresql://<user>:<password>@<host>:<port>/<db>` (`postgres://` and `postgresql+psycopg://` are also accepted). Injected by the gitops repo from the CloudNativePG Secret. Never logged. The `PG*` variables are present but not read. |

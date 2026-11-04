@@ -1,37 +1,22 @@
-from datetime import UTC, date
+"""Unit tests for PostgresTaskStore that need no database."""
 
-from demo_taskboard_api.task_store import TaskStore
+from __future__ import annotations
 
+import pytest
 
-def test_empty_on_creation() -> None:
-    assert TaskStore().list() == []
-
-
-def test_order_preserved() -> None:
-    store = TaskStore()
-    a = store.add("A", None)
-    b = store.add("B", date(2030, 1, 2))
-    assert store.list() == [a, b]
-    assert b.due_date == date(2030, 1, 2)
-    assert a.created_at.tzinfo is UTC
+from demo_taskboard_api.db import Database, StorageUnavailable
+from demo_taskboard_api.task_store import TASKS_SCHEMA, PostgresTaskStore
 
 
-def test_equal_titles_get_distinct_ids() -> None:
-    store = TaskStore()
-    a = store.add("same", None)
-    b = store.add("same", None)
-    assert a.id != b.id
-    assert len(store.list()) == 2
+def test_unconfigured_store_raises_on_add_and_list() -> None:
+    store = PostgresTaskStore(Database(None, TASKS_SCHEMA))
+    with pytest.raises(StorageUnavailable):
+        store.add("A", None)
+    with pytest.raises(StorageUnavailable):
+        store.list()
 
 
-def test_returned_list_is_copy() -> None:
-    store = TaskStore()
-    store.add("A", None)
-    store.list().clear()
-    assert len(store.list()) == 1
-
-
-def test_new_store_is_independent() -> None:
-    store = TaskStore()
-    store.add("A", None)
-    assert TaskStore().list() == []
+def test_schema_is_idempotent() -> None:
+    assert TASKS_SCHEMA
+    for statement in TASKS_SCHEMA:
+        assert "IF NOT EXISTS" in statement

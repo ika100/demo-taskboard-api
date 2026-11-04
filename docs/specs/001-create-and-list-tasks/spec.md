@@ -27,18 +27,18 @@ As an API client, I want to list all tasks, so that I can see everything recorde
 - **AC-001.5** Given a create request with `"title": "  Buy milk  "`, when it is sent, then the stored and returned title is `"Buy milk"` (surrounding whitespace removed).
 - **AC-001.6** Given a create request whose `due_date` is not a calendar date in `YYYY-MM-DD` form (for example `"tomorrow"`, `"2026-13-01"`, `"2026-02-30"` or `"2026-12-01T10:00:00Z"`), when it is sent, then the response is `422` with an error that names the field `due_date`, and no task is created.
 - **AC-001.7** Given a create request with a `due_date` before today, when it is sent, then the task is created (`201`) with that due date.
-- **AC-001.8** Given no tasks have been created since the service started, when a client sends `GET /tasks`, then the response is `200` with the JSON body `[]`. (smoke)
+- **AC-001.8** Given no tasks have been created since the service started, when a client sends `GET /tasks`, then the response is `200` with the JSON body `[]`.
 - **AC-001.9** Given tasks "A" and then "B" were created, when a client sends `GET /tasks`, then the response is `200` with a JSON array of exactly those two tasks in creation order (oldest first), each with the same `id`, `title`, `due_date` and `created_at` returned when it was created.
 - **AC-001.10** Given two create requests with the same title, when both are sent, then both succeed with different `id` values and both appear in `GET /tasks`.
-- **AC-001.11** Given tasks were created, when the service restarts, then `GET /tasks` returns `[]`.
+- ~~**AC-001.11**~~ withdrawn 2026-11-04: tasks persist in Postgres (spec 002-keep-tasks-in-postgres-and-report-not, system spec 001-persistent-tasks-and-web-task-list).
 
 ## Non-goals
 
-- Persistence beyond the process lifetime (database, file storage); tasks are lost on restart by design.
+- ~~Persistence beyond the process lifetime (database, file storage); tasks are lost on restart by design.~~ withdrawn 2026-11-04: tasks persist in Postgres (spec 002-keep-tasks-in-postgres-and-report-not, system spec 001-persistent-tasks-and-web-task-list).
 - Reading a single task by id, updating, completing or deleting tasks.
 - Filtering, sorting options, search and pagination of the list.
 - Users, authentication and per-user task lists; every client sees every task.
-- Sharing tasks across multiple replicas; each instance has its own list.
+- ~~Sharing tasks across multiple replicas; each instance has its own list.~~ withdrawn 2026-11-04: tasks persist in Postgres (spec 002-keep-tasks-in-postgres-and-report-not, system spec 001-persistent-tasks-and-web-task-list).
 - Fields other than title and due date (description, priority, status, tags).
 - Time-of-day or time zone on the due date.
 - A cap on the number of tasks kept in memory.
@@ -61,3 +61,4 @@ As an API client, I want to list all tasks, so that I can see everything recorde
 - 2026-11-03 approved
 - 2026-11-03 building
 - 2026-11-03 done
+- 2026-11-04 amended: AC-001.11 and two non-goals withdrawn, AC-001.8 no longer smoke (superseded by spec 002).

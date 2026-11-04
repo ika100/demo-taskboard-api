@@ -1,4 +1,7 @@
-"""Acceptance tests for spec 001-create-and-list-tasks."""
+"""Acceptance tests for spec 001-create-and-list-tasks, run against a real database.
+
+They are the AC-002.3 baseline: the 001 behaviour must be unchanged with Postgres behind it.
+"""
 
 from __future__ import annotations
 
@@ -10,11 +13,11 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture()
-def fresh() -> TestClient:
-    """A TestClient over a brand-new app instance (empty store)."""
+def fresh(db_url: str) -> TestClient:
+    """A TestClient over a new app instance on a brand-new, empty database."""
     from demo_taskboard_api.main import create_app
 
-    return TestClient(create_app())
+    return TestClient(create_app(database_url=db_url))
 
 
 def _names_field(response: Any, field: str) -> bool:
@@ -22,11 +25,8 @@ def _names_field(response: Any, field: str) -> bool:
     return bool(detail) and any(str(e["loc"][-1]) == field for e in detail)
 
 
-def test_create_task_returns_201_body() -> None:  # AC-001.1
-    from demo_taskboard_api.main import create_app
-
-    c = TestClient(create_app())
-    r = c.post("/tasks", json={"title": "Buy milk"})
+def test_create_task_returns_201_body(fresh: TestClient) -> None:  # AC-001.1 AC-002.3
+    r = fresh.post("/tasks", json={"title": "Buy milk"})
     assert r.status_code == 201
     body = r.json()
     assert isinstance(body["id"], str) and body["id"]
@@ -37,7 +37,7 @@ def test_create_task_returns_201_body() -> None:  # AC-001.1
     assert created.tzinfo is not None and created.astimezone(UTC)
 
 
-def test_create_task_with_due_date(fresh: TestClient) -> None:  # AC-001.2
+def test_create_task_with_due_date(fresh: TestClient) -> None:  # AC-001.2 AC-002.3
     r = fresh.post("/tasks", json={"title": "File taxes", "due_date": "2026-12-01"})
     assert r.status_code == 201
     assert r.json()["due_date"] == "2026-12-01"
@@ -47,14 +47,16 @@ def test_create_task_with_due_date(fresh: TestClient) -> None:  # AC-001.2
     "payload",
     [{}, {"title": None}, {"title": ""}, {"title": "   "}],
 )
-def test_invalid_title_rejected(fresh: TestClient, payload: dict[str, Any]) -> None:  # AC-001.3
+def test_invalid_title_rejected(  # AC-001.3 AC-002.3
+    fresh: TestClient, payload: dict[str, Any]
+) -> None:
     r = fresh.post("/tasks", json=payload)
     assert r.status_code == 422
     assert _names_field(r, "title")
     assert fresh.get("/tasks").json() == []
 
 
-def test_title_length_limit(fresh: TestClient) -> None:  # AC-001.4
+def test_title_length_limit(fresh: TestClient) -> None:  # AC-001.4 AC-002.3
     r = fresh.post("/tasks", json={"title": "a" * 201})
     assert r.status_code == 422
     assert _names_field(r, "title")
@@ -67,7 +69,7 @@ def test_title_length_limit(fresh: TestClient) -> None:  # AC-001.4
     assert r.status_code == 201
 
 
-def test_title_is_trimmed(fresh: TestClient) -> None:  # AC-001.5
+def test_title_is_trimmed(fresh: TestClient) -> None:  # AC-001.5 AC-002.3
     r = fresh.post("/tasks", json={"title": "  Buy milk  "})
     assert r.status_code == 201
     assert r.json()["title"] == "Buy milk"
@@ -75,26 +77,26 @@ def test_title_is_trimmed(fresh: TestClient) -> None:  # AC-001.5
 
 
 @pytest.mark.parametrize("due", ["tomorrow", "2026-13-01", "2026-02-30", "2026-12-01T10:00:00Z"])
-def test_invalid_due_date_rejected(fresh: TestClient, due: str) -> None:  # AC-001.6
+def test_invalid_due_date_rejected(fresh: TestClient, due: str) -> None:  # AC-001.6 AC-002.3
     r = fresh.post("/tasks", json={"title": "x", "due_date": due})
     assert r.status_code == 422
     assert _names_field(r, "due_date")
     assert fresh.get("/tasks").json() == []
 
 
-def test_past_due_date_accepted(fresh: TestClient) -> None:  # AC-001.7
+def test_past_due_date_accepted(fresh: TestClient) -> None:  # AC-001.7 AC-002.3
     r = fresh.post("/tasks", json={"title": "old", "due_date": "2000-01-01"})
     assert r.status_code == 201
     assert r.json()["due_date"] == "2000-01-01"
 
 
-def test_list_empty_on_fresh_app(fresh: TestClient) -> None:  # AC-001.8
+def test_list_empty_on_fresh_database(fresh: TestClient) -> None:  # AC-001.8 AC-002.4
     r = fresh.get("/tasks")
     assert r.status_code == 200
     assert r.json() == []
 
 
-def test_list_in_creation_order(fresh: TestClient) -> None:  # AC-001.9
+def test_list_in_creation_order(fresh: TestClient) -> None:  # AC-001.9 AC-002.3
     a = fresh.post("/tasks", json={"title": "A"}).json()
     b = fresh.post("/tasks", json={"title": "B", "due_date": "2026-12-01"}).json()
     r = fresh.get("/tasks")
@@ -102,19 +104,9 @@ def test_list_in_creation_order(fresh: TestClient) -> None:  # AC-001.9
     assert r.json() == [a, b]
 
 
-def test_same_title_gets_distinct_ids(fresh: TestClient) -> None:  # AC-001.10
+def test_same_title_gets_distinct_ids(fresh: TestClient) -> None:  # AC-001.10 AC-002.3
     r1 = fresh.post("/tasks", json={"title": "same"})
     r2 = fresh.post("/tasks", json={"title": "same"})
     assert r1.status_code == r2.status_code == 201
     assert r1.json()["id"] != r2.json()["id"]
     assert len(fresh.get("/tasks").json()) == 2
-
-
-def test_restart_empties_list() -> None:  # AC-001.11
-    from demo_taskboard_api.main import create_app
-
-    first = TestClient(create_app())
-    first.post("/tasks", json={"title": "A"})
-    assert len(first.get("/tasks").json()) == 1
-    second = TestClient(create_app())
-    assert second.get("/tasks").json() == []
