@@ -38,6 +38,7 @@ tasks:
     covers: [AC-002.1, AC-002.2, AC-002.3, AC-002.4, AC-002.5, AC-002.6, AC-002.7, AC-002.8, AC-002.9, AC-002.10, AC-002.11, AC-002.12, AC-002.13, AC-002.14]
     parallel_safe: false
     depends_on: [t3, t4]
+    done: true
 ---
 
 # Plan — 002 Keep tasks in Postgres and report not-ready and 503 when the database is unreachable
