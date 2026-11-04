@@ -17,6 +17,7 @@ tasks:
     covers: [AC-002.3]
     parallel_safe: true
     depends_on: []
+    done: true
   - id: t3
     title: Add the Database module (engine, timeouts, error mapping, readiness, schema bootstrap)
     files: [src/demo_taskboard_api/db.py, tests/test_db.py]
