@@ -45,7 +45,8 @@ def test_unconfigured_is_unavailable_and_not_ready() -> None:
 
 
 def test_closed_port_maps_to_storage_unavailable_without_leaking() -> None:
-    url = f"postgresql://someuser:s3cretpw@127.0.0.1:{_closed_port()}/db"
+    creds = "someuser:s3cretpw"  # pragma: allowlist secret
+    url = f"postgresql://{creds}@127.0.0.1:{_closed_port()}/db"
     db = Database(url, ("SELECT 1",))
     start = time.monotonic()
     with pytest.raises(StorageUnavailable) as info:
