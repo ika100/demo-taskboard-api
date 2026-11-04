@@ -96,6 +96,9 @@ class TcpProxy:
                 client, _ = listener.accept()
             except OSError:
                 return
+            if self._listener is not listener:
+                client.close()
+                return
             try:
                 upstream = socket.create_connection(self.target, timeout=5)
             except OSError:
@@ -122,8 +125,13 @@ class TcpProxy:
 
     def stop(self) -> None:
         if self._listener is not None:
-            self._listener.close()
-            self._listener = None
+            listener, self._listener = self._listener, None
+            try:
+                # close() alone does not wake a blocked accept() on Linux
+                listener.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            listener.close()
         with self._lock:
             conns, self._conns = self._conns, []
         for s in conns:
