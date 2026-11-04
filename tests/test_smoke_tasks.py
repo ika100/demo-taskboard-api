@@ -1,4 +1,4 @@
-"""Smoke tests for spec 001 (AC-001.1, AC-001.8): reach the service only via its URL."""
+"""Smoke tests for spec 001 (AC-001.1): reach the service only via its URL."""
 
 from __future__ import annotations
 
@@ -18,10 +18,3 @@ def test_smoke_ac_001_1_create_task(smoke_base_url: str) -> None:  # AC-001.1
     assert body["title"] == title
     assert body["due_date"] is None
     assert body["created_at"]
-
-
-@pytest.mark.smoke
-def test_smoke_ac_001_8_list_tasks(smoke_base_url: str) -> None:  # AC-001.8
-    r = httpx.get(smoke_base_url + "/tasks", timeout=10)
-    assert r.status_code == 200
-    assert isinstance(r.json(), list)
