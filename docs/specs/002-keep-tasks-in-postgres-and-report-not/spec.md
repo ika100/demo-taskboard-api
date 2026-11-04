@@ -1,7 +1,7 @@
 ---
 spec_id: 002-keep-tasks-in-postgres-and-report-not
 title: Keep tasks in Postgres and report not-ready and 503 when the database is unreachable
-status: building
+status: done
 priority: P1
 shape: service-python
 parent: ika100/demo-taskboard-gitops:001-persistent-tasks-and-web-task-list
@@ -157,3 +157,4 @@ As an operator, I want the API to report not-ready while the database is unreach
 - 2026-11-04 created
 - 2026-11-04 approved
 - 2026-11-04 building
+- 2026-11-04 done
